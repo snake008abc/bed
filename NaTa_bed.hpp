@@ -141,10 +141,19 @@ class Bed
 		}
 		else
 		{
-			boost::cnv::lexical_cast cnv;
-			boost::optional<std::string> v = boost::convert<std::string>(std::get<N>(data), cnv);
-			rhs += (*v + '\t');
-			get_string<N+1>(rhs);
+			using type = typename std::tuple_element<N, decltype(data)>::type;
+      if constexpr (std::is_same<std::string, type>::value)
+      {
+        std::string s = std::get<N>(data);
+        rhs += (s + '\t');
+        get_string<N+1>(rhs);
+      }
+      else
+      {
+        std::string s = std::to_string(std::get<N>(data));
+        rhs += (s + '\t');
+        get_string<N+1>(rhs);
+      }
 		}
 	}
   public:
